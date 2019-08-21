@@ -1,0 +1,363 @@
+##############################################################################
+# Section: Connecting to the Solace message broker
+# These values are used by the messaging API to connect to the message broker.
+
+# The client username and password. The password is optional if client
+# authentication is disabled.
+SESSION_USERNAME cache
+SESSION_PASSWORD cache
+
+
+# The Solace message broker IP address the Solace PubSub+ Cache instance must
+# connect to. This address should be the primary address assigned to the
+# msg-backbone on the message broker.
+# For fail-over support, when running on a standalone Linux system, a
+# comma-separated list of IP addresses can be provided.
+#
+#SESSION_HOST XXX.XXX.XXX.XXX
+#SESSION_HOST XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY
+
+# The local IP address to bind to for the Solace PubSub+ Cache instance's
+# outgoing connections. When running on a standalone Linux server, this does not
+# need to be set. The host TCP/IP stack will choose the best interface
+# automatically.
+#
+#SESSION_BIND_IP xxx.xxx.xxx.xxx
+
+
+# The message VPN the Solace PubSub+ Cache instance must connect to.
+SESSION_VPN_NAME default
+
+
+# Session Client Name that is used to create a unique session.
+# If this parameter is not specified, a unique client name is generated
+# automatically. This name can be displayed on the Solace message broker
+# through the "show client *" CLI command.
+#SESSION_CLIENT_NAME client1
+
+
+# A one-line description of the Solace PubSub+ Cache instance. The description
+# is shown on the messsge broker CLI. This parameter is optional.
+SESSION_APPLICATION_DESCRIPTION Solace PubSub+ Cache
+
+
+# The SESSION_SUBSCRIBER_LOCAL_PRIORITY is used by the message broker to
+# determine which Solace PubSub+ Cache instance has the highest priority for
+# receiving cache requests.  Cache requests from clients are delivered only to
+# one Solace PubSub+ Cache instance and only to one from the set of Solace
+# PubSub+ Cache instances configured with the highest priority, where 1 is the
+# highest and 4 is the lowest. If there are no priority 1 Solace PubSub+ Cache
+# instances, the message broker falls back to delivering to a lower priority
+# Solace PubSub+ Cache instance in priority order: priority 2, then priority 3,
+# and finally priority 4. If there are multiple Solace PubSub+ Cache instances
+# with the same priority setting, the message broker's deliver-to-one
+# functionality attempts to evenly distribute requests amongst those Solace
+# PubSub+ Cache instances.
+#SESSION_SUBSCRIBER_LOCAL_PRIORITY 1
+
+# The network priority is a future feature to define the priority of the Solace
+# PubSub+ Cache instance request subscriptions in a multiple message broker
+# network.
+#SESSION_SUBSCRIBER_NETWORK_PRIORITY 1
+
+# The TCP connection to the Solace message broker is polled with an in-band
+# KEEPALIVE message.  The Solace PubSub+ Cache instance assumes the TCP
+# connection has failed if this poll fails after sending
+# SESSION_KEEP_ALIVE_LIMIT polls, with a period of
+# SESSION_KEEP_ALIVE_INTERVAL_MS milliseconds
+SESSION_KEEP_ALIVE_INTERVAL_MS 3000
+SESSION_KEEP_ALIVE_LIMIT 3
+
+#############################################################################
+# Section: Communicating with the Designated Router
+# The name of this Solace PubSub+ Cache instance, as known by the Designated
+# Router. This name must match that entered at the CLI with the "create
+# cache-instance" command.
+CACHE_INSTANCE_NAME instance1
+
+# The name of Distributed Cache where this Solace PubSub+ Cache instance is
+# configured, as known by the Designated Router. This name must match that
+# entered at the CLI with the "create distributed-cache" command.
+# This is an optional field. If provided, only the designated cache manager will
+# respond to registration requests, which should prevent the generation of
+# extraneous VPN_SOLCACHE_REGISTRATION_FAIL events.
+# CACHE_DISTRIBUTED_CACHE_NAME cache1
+
+
+##############################################################################
+# Plugin control: Used to control whether an ingress plugin is in use
+#
+# CACHE_ENABLE_PLUGIN
+#   Determines whether a plugin is used. Default 0 (disabled)
+#
+# CACHE_PLUGIN_LIBNAME
+#   The name of the plugin library.  Default libSolCachePlugin.so
+#   This can be a full path; otherwise the LD_LIBRARY_PATH is used to find the
+#   plugin library.
+
+
+##############################################################################
+# Section: Thread affinity and thread control
+#
+# CACHE_NUM_WORKERS
+#   Control the number of worker threads, which run plugins, respond to cache
+#   requests, and carry out other work against topic entries. Worker threads can
+#   work in parallel against different topics. Set to zero to have no separate
+#   worker thread(s) and instead have the Topic Index thread also carry out the
+#   worker functions. Default 0. Note that when using 1 or more worker threads,
+#   the Topic Index thread and the Worker thread(s) should be set to spin. Not
+#   spinning the Topic Index thread and the Worker threads when separate worker
+#   threads are in use is not efficient.
+#
+# CPU affinity is a hex mask to indicate which CPU the Solace PubSub+ Cache
+# instance is allowed to use. For example a value of:
+#   0x01 indicates use CPU 0
+#   0x02 indicates use CPU 1
+#   0x04 indicates use CPU 2
+#   0x03 indicates use either CPU0 or CPU1
+#
+# CACHE_TOPIC_INDEX_CPU_AFFINITY
+#   The affinity used by the central thread that holds the topic storage.
+# CACHE_WORKERS_CPU_AFFINITY
+#   The affinity used by the set of worker threads.  This affinity is not used
+#   when CACHE_NUM_WORKERS is set to zero.
+# CACHE_SLOW_PATH_CPU_AFFINITY
+#   The affinity used by the slow path thread, which carries out background
+#   activities.
+# CONTEXT_THREAD_AFFINITY
+#   The affinity used by the API thread which handles the session connection.
+# CACHE_CPU_AFFINITY
+#   This affinity will be used in place of any of the above affinity settings
+#   that are not specified. Default is use any CPU (-1).
+#
+# Helpful hint: "ps -eo pid,psr,comm" will show which processors the SolCache
+# PubSub+ Instance is actually using.
+#
+# Disable whether certain threads hard-spin (consuming 100% of a CPU core) or
+# operate in a blocking manner. Default is to block (0). Note that the API
+# context thread does not hard spin.
+#
+# CACHE_SPIN_TOPIC_INDEX
+#   Whether to hard-spin the topic index thread
+# CACHE_SPIN_WORKERS
+#   Whether to hard-spin the worker threads. Not used when CACHE_NUM_WORKERS is
+#   set to zero.
+# CACHE_SPIN_SLOW_PATH
+#   Whether to hard-spin the slow path thread
+
+
+##############################################################################
+# Section: Cache buffer control
+#
+# CACHE_WORKER_BUF_POOL
+#   Enable to give each Worker Thread its own buffer pool. This is especially
+#   useful when using plugins since plugins may free and allocate buffers due
+#   to message merging. Otherwise leave at default (0).
+#
+# CACHE_BUF_POOL_ENTRY_SIZE_n n = 0..9
+#   Size of each of the 10 buffer size quanta. Each must be larger than the
+#   preceding size. Cached messages are stored in these buffers.
+#   Default: 128, 512, 1024, 2048, 3072, 4096, 6144, 8192, 10240,
+#            (1024*1024) + 2048
+#
+# CACHE_GLOBAL_BUF_POOL_ENTRY_MAX_n  n = 0..9
+#   Target number of buffers for a given quanta size that can be stored in the
+#   global buffer pool before being freed back to the memory allocation system.
+#   This is not a hard limit and generally the Solace PubSub+ Cache avoids
+#   returning memory to the memory management sub-system.
+#   Default: 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 100
+#
+# CACHE_LOCAL_BUF_POOL_ENTRY_MAX_n  n = 0..9
+#   Number of buffers for a given quanta size that can be stored in a local
+#   buffer pool before being freed back to the global buffer pool. Note that the
+#   Slow Path thread has a local buffer pool, and optionally each worker thread
+#   has its own local buffer pool (controlled by CACHE_WORKER_BUF_POOL)
+#   Default: 100, 100, 100, 100, 100, 100, 100, 100, 100, 10
+
+
+# API log level, mask out all logs generated by the messaging API that are of a
+# lower level than this.
+# Valid values are: DEBUG, INFO, NOTICE, WARN, ERROR, CRITICAL, ALERT, EMERGENCY
+# This parameter is optional and reloadable. The default log level is NOTICE.
+CACHE_SDK_LOG_LEVEL INFO
+
+
+# Cache log level, mask out Solace PubSub+ Cache instance logs that are of a
+# lower level than this.
+# Valid values are: DEBUG, INFO, NOTICE, WARN, ERROR, CRITICAL, ALERT, EMERGENCY
+# This parameter is optional and reloadable. The default log level is NOTICE.
+CACHE_LOG_LEVEL INFO
+
+# This causes logging to go to stdout rather than syslog.
+CACHE_DISABLE_SYSLOG 1
+
+# Solace PubSub+ Cache instance logs utilize syslogd.
+# see the syslog.conf man page for possible values
+#CACHE_SYSLOG_LOG_FACILITY local0
+
+
+# A user-definable tag for all the logs generated by the Solace PubSub+ Cache
+# instance.
+#CACHE_SYSLOG_TAG tag
+
+
+# Solace PubSub+ Cache instance events utilize syslogd
+# see the syslog.conf man page for possible values
+#CACHE_SYSLOG_EVENT_FACILITY local3
+
+
+# This parameter controls the way the Solace PubSub+ Cache responds to a cluster
+# synchronization failure. If the Solace PubSub+ Cache instance fails cluster
+# synchronization it will, by default, enter the stopped administrative state
+# (stop servicing caching requests) regardless of the instance
+# stop-on-lost-message configuration. Although overriding this default behavior
+# is not recommended it can be overridden by setting the
+# CACHE_STOP_ON_SYNCHRONIZATION_FAILURE parameter to false. The Solace PubSub+
+# Cache will then enter the stopped state following a synchronization failure
+# only if its stop-on-lost-message configuration is set to true.
+#
+# WARNING: If the Solace PubSub+ Cache instance is configured to NOT
+# stop-on-lost-message and CACHE_STOP_ON_SYNCHRONIZATION_FAILURE is set to the
+# non-default value of false, the entire Solace PubSub+ Cache cluster may lose
+# some or all messages when the cluster's instances disconnect and reconnect
+# concurrently, such as during a failover. This configuration is not
+# recommended.
+#
+# When STOP_ON_SYNCHRONIZATION_FAILURE is true, the Solace PubSub+ Cache
+# instance  will enter the STOPPED state and operator intervention is required
+# to bring it up. The operator may restart the cache-instance or send a 'start'
+# command from the message router. The cache-instance will then retry
+# cluster-sync and if it succeeds it will enter the UP state cleanly and with a
+# correct set of cached messages.
+#
+# CACHE_STOP_ON_SYNCHRONIZATION_FAILURE 1
+
+
+# Controls filtering of messages with topics that start with "#" (such as
+# "#P2P"). Topics that start with "#" are reserved for use by the broker and
+# Solace PubSub+ Cache instance. When filtering is enabled, message topics that
+# start with "#", followed by one of the prefixes specified in the list, are not
+# cached but silently discarded. Do not include leading # in list entries. This
+# parameter is optional and reloadable. The default value specifies that topics
+# starting with "#P2P', "#LOG", "#RT", and "#MCAST" are filtered.
+#CACHE_FILTER_LIST P2P,LOG,RT,MCAST
+
+
+# A cache request may require multiple response messages to complete the
+# transfer of all matching cached messages. In this case a session is allocated
+# for the response, and this session is used to track the progress of the cache
+# request. A session timeout parameter is required to handle the case where
+# communication between the Solace PubSub+ Cache instance and the client is
+# broken during the transfer. This parameter is optional and reloadable.
+# The default is 10 seconds.
+#CACHE_SESSION_TIMEOUT_SEC 10
+
+
+# A cache request may require multiple response messages to complete the
+# transfer of all matching cached messages. This parameter controls the target
+# size of each response message. The Solace PubSub+ Cache instance will insert
+# as many messages as necessary to match the target size for each response
+# message. Too large a target size will cause the Solace PubSub+ Cache instance
+# to spend more time on each cache request which may reduce the responsiveness
+# of the Solace PubSub+ Cache instance. Too small a target size will increase
+# the number of response messages required to transfer a large number of
+# messages, possibly increasing the total time to complete the cache request,
+# especially if the round trip time between the Solace PubSub+ Cache instance
+# and client is long. Note that this parameter does not limit the size of a
+# cached message that can be returned in a response message. This parameter is
+# optional and reloadable.
+# The default is 1048576 (bytes).
+#CACHE_REPLY_SIZE_LIMIT 1048576
+
+
+# Enable (1) or disable (0) filtering of live data from a cache response. Each
+# cache request is timestamped upon arrival at the Solace PubSub+ Cache
+# instance. When this feature is enabled, data that arrives after the cache
+# request are not returned in the cache response. This feature is useful to
+# reduce the number of duplicate messages seen by the client that made the cache
+# request when the client is subscribed to receive live data. When this
+# parameter is disabled, the Solace PubSub+ Cache instance will return all
+# available data up to the max-age and max-messages as specified in the cache
+# request.
+# This feature MUST NOT be enabled when the Solace PubSub+ Cache instance is
+# being used with a plugin that applies incremental updates to already-cached
+# messages. This parameter is optional and reloadable. The default is that
+# filtering of live data is disabled.
+#CACHE_ENABLE_FILTER_LIVE_DATA 0
+
+
+# This parameter controls the delay between subscribing for a global topic and
+# sending the cache request for the global topic to the home cluster. This delay
+# is necessary to allow the subscription to propagate to all nodes in the
+# network before making the cache request. This parameter is optional and
+# reloadable.
+# The default is 200 milliseconds.
+#CACHE_GLOBAL_CACHE_REQUEST_DELAY_MS 200
+
+
+# This parameter controls the timeout value for a global cache request to the
+# home cluster. If the home cluster does not respond to the cache request within
+# the timeout time the global cache request is terminated and an error response
+# is returned to the client. This parameter is optional and reloadable.
+# The default is 30 seconds.
+#CACHE_GLOBAL_CACHE_REQUEST_TIMEOUT_SEC 5
+
+# This parameter controls the backup directory for Solace PubSub+ Cache
+# instance. When this parameter is set, it is the parent directory for all
+# backup files created by the backup-cached-messages CLI command.
+#
+#CACHE_MSG_STORE_DIRECTORY
+
+##############################################################################
+# Section: Less common tuning parameters
+#
+# These parameters can be used to tune the behaviour of New Topic Advertisement
+#
+# CACHE_DIRECT_NEW_TOPIC_ADV_EVENTS
+#   Directly publish #LOG messages for New Topic Advertisements instead of
+#   sending to the Cache Manager. Default enabled (1).
+# CACHE_MAX_NEW_TOPIC_ADV_PER_SEC (reloadable)
+#   Rate limiter for new topic advertisements per second. Actual rate may be
+#   less than this limit. Zero means no limit. Default 0. Reloadable.
+# CACHE_NEW_TOPIC_ADV_DELAY_SEC
+#   The delay from start-up, in seconds, before the Solace Pubsub+ Cache
+#   instance will start sending New Topic events (either directly published or
+#   sent to the Cache Manager). The cache is busiest at startup if it starts
+#   with incoming traffic, so this holds off new topic advertisement work during
+#   this period. Default 5.
+#
+# Other tuning parameters - adjust with care.
+#
+# CACHE_FAST_PATH_CONGESTION_THRESHOLD
+#   This is a key tuning parameter which controls how many work items can be in
+#   flight from the context thread. This is a fixed size pool, allocated at
+#   start-up, that never changes size. When this pool is exhausted, the context
+#   thread spins waiting for an available item so it can forward a new item
+#   (incoming message, C API timer tick, C API session event). This creates a
+#   key back-pressure point if the incoming rate exceeds what the Topic Index
+#   thread can absorb. Such back-pressure can lead to discards from the message
+#   broker. Without this back-pressure point, the cache could queue an unlimited
+#   number of messages (until memory exhaustion). Default 100000
+#
+# CACHE_SEND_CONGESTION_SET_THRESHOLD
+#   Level of send queuing in slow path (above C API) before back-pressure is
+#   applied for cache requests (e.g. queue and do not process them).
+#   Default 100663296 (bytes). Reloadable.
+#
+# CACHE_SEND_CONGESTION_CLEAR_THRESHOLD
+#   Clear threshold for send queuing check. Must be less than set threshold.
+#   Default 67108864 (bytes). Reloadable.
+#
+# CACHE_SET_THREADS_HIGH_PRIORITY
+#   Enable (1) to set cache instance threads to high priority and real-time
+#   scheduling algorithm. Must have root privileges to take effect. If cannot
+#   take effect a NOTICE log will be raised and cache will continue.
+#   Default 0.
+#
+# CACHE_MAX_SESSIONS
+#   Maximum number of cache sessions that can exist in parallel. When this
+#   limit is exceeded, new cache request are queued in the cluster queue until
+#   new sessions can be created.
+#   Default 10000. Reloadable.
+#
+

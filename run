@@ -1,0 +1,5 @@
+docker run  \
+--name solcache \
+-v $PWD/config:/home/solace/config \
+--env CONFIG_FILE_PATH=/home/solace/config/config.txt \
+solcache
