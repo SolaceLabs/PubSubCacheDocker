@@ -26,6 +26,7 @@ The other way to build the image is to run
 ```
 export DOCKER_CONTENT_TRUST=1
 docker build -t solcache:latest --file=Dockerfile --build-arg CACHE_FILENAME=SolaceCache_Linux26-x86_64_opt_1.0.6.tar.gz --build-arg SOLCLIENT_FILENAME=solclient_Linux26-x86_64_opt_7.11.08.tar.tz build-dir```
+```
 
 ## Running the image
 
