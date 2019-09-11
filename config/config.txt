@@ -8,14 +8,18 @@ SESSION_USERNAME cache
 SESSION_PASSWORD cache
 
 
-# The Solace message broker IP address the Solace PubSub+ Cache instance must
-# connect to. This address should be the primary address assigned to the
-# msg-backbone on the message broker.
+# The Solace message broker host entry or IP address the Solace PubSub+ Cache
+# instance must connect to. This address should be the primary address assigned
+# to the msg-backbone on the message broker.
 # For fail-over support, when running on a standalone Linux system, a
-# comma-separated list of IP addresses can be provided.
+# comma-separated list of hosts or IP addresses can be provided.
 #
-#SESSION_HOST XXX.XXX.XXX.XXX
-#SESSION_HOST XXX.XXX.XXX.XXX,YYY.YYY.YYY.YYY
+#SESSION_HOST [Protocol:]Host[:Port] or XXX.XXX.XXX.XXX
+#SESSION_HOST host1,host2
+
+# If using a secure connection to the Solace message broker, provide the
+# directory location which contains the server's CA certificate.
+#SESSION_SSL_TRUST_STORE_DIR /home/solace/truststore
 
 # The local IP address to bind to for the Solace PubSub+ Cache instance's
 # outgoing connections. When running on a standalone Linux server, this does not
