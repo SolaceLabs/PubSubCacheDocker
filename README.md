@@ -32,6 +32,8 @@ docker build -t solcache:latest --file=Dockerfile --build-arg CACHE_FILENAME=Sol
 
 To run the image, run the `run` script. It will start the container and run it in the forground. Press ctrl-C to stop the container.
 
+Note: depending on your Docker configuration you may need to use `sudo` if the script fails to execute with a not authorized error.
+
 The config file is made available to the container using a mounted volume, it is not built into the image.
 
 Note: If using secure connection to the Solace message broker, you'll also need to make the message broker server's CA certificate available. Place the certificate in a `truststore` directory and modify the `run` script with an additional `-v` argument to also mount this directory, similarly to how the config dir is mounted. Also configure `SESSION_SSL_TRUST_STORE_DIR` in the config file to point to the mounted truststore directory.
