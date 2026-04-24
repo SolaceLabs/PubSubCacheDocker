@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
-ENV LANG en_US.UTF-8
-ENV LD_LIBRARY_PATH /home/solace/solclient/lib:/home/solace/SolaceCache/lib
+ENV LANG=en_US.UTF-8
+ENV LD_LIBRARY_PATH=/home/solace/solclient/lib:/home/solace/SolaceCache/lib
 RUN useradd -d /home/solace -m -s /bin/bash -U solace
 WORKDIR /home/solace
 ARG CACHE_FILENAME=SolaceCache_Linux26-x86_64_opt_1.0.11.tar.gz
